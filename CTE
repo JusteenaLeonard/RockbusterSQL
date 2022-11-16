@@ -1,0 +1,23 @@
+SQL CTE Query
+USed to find the average amount paid by the top 5 customers in the top 10 cities.
+
+WITH top_five_customers_cte (customer_id, first_name, last_name, city, country,
+customer_payment_total) AS
+(SELECT A.customer_id, B.first_name, B.last_name, D.city, E.country, SUM(amount) AS
+customer_payment_total
+FROM payment A
+JOIN customer B on A.customer_id = B.customer_id
+JOIN address C on B.address_id = C.address_id
+JOIN city D on C.city_id = D.city_id
+JOIN country E on D.country_id = E.country_id
+WHERE city IN ('Aurora','Acua','Citrus Heights','Iwaki','Ambattur','Shanwei','So
+Leopoldo',
+'Teboksary','Tianjin','Clanjur')
+GROUP BY A.customer_id, first_name, last_name, city, country
+ORDER BY customer_payment_total DESC
+LIMIT 5)
+SELECT B.customer_id, B.first_name, B.last_name, B.city, B.country, AVG(amount) AS
+average_payment
+FROM payment A
+JOIN top_five_customers_cte B ON A.customer_id = B.customer_id
+GROUP BY 1,2,3,4,5
